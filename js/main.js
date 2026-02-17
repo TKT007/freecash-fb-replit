@@ -1,5 +1,5 @@
 // ========================================
-// DEVICE GATE - BLOCK DESKTOP CLICKS
+// DEVICE DETECTION
 // ========================================
 (function () {
     function isMobileOrTablet() {
@@ -12,72 +12,83 @@
 
     window._isMobile = isMobileOrTablet();
 
-    if (!window._isMobile) {
-        document.addEventListener('DOMContentLoaded', function () {
-            var cta = document.getElementById('cta');
-            if (cta) {
-                cta.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    alert('This app is only available on mobile devices. Please visit this page on your phone or tablet.');
-                    return false;
-                }, true);
+    // ========================================
+    // BLOCK RIGHT-CLICK (all devices)
+    // ========================================
+    document.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+        return false;
+    });
 
-                cta.removeAttribute('href');
-                cta.style.opacity = '0.5';
-                cta.style.cursor = 'not-allowed';
-            }
-        });
+    // ========================================
+    // BLOCK DEVTOOLS SHORTCUTS (all devices)
+    // ========================================
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'F12') { e.preventDefault(); return false; }
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i')) { e.preventDefault(); return false; }
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'J' || e.key === 'j')) { e.preventDefault(); return false; }
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c')) { e.preventDefault(); return false; }
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u')) { e.preventDefault(); return false; }
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'S' || e.key === 's')) { e.preventDefault(); return false; }
+    });
+
+    // ========================================
+    // DESKTOP = BLACK SCREEN (nothing shown)
+    // ========================================
+    if (!window._isMobile) {
+        document.documentElement.style.cssText = 'background:#000!important;';
+
+        function nukeDesktop() {
+            document.body.innerHTML = '';
+            document.body.style.cssText = 'background:#000!important;margin:0;padding:0;min-height:100vh;';
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', nukeDesktop);
+        } else {
+            nukeDesktop();
+        }
+
+        // Stop here - nothing else loads on desktop
+        return;
     }
 })();
 
 
 // ========================================
-// FREECASH - AGE SELECTION & TRANSITION
+// === BELOW ONLY RUNS ON MOBILE/TABLET ===
+// ========================================
+
+// ========================================
+// AGE SELECTION & TRANSITION
 // ========================================
 var selectedAge = '';
 
 function selectAge(age) {
     selectedAge = age;
-    console.log('🎂 Age selected:', age);
 
     var firstStep = document.getElementById('firstStep');
     var secondStep = document.getElementById('secondStep');
 
-    // Fade out first step
     firstStep.classList.add('fade-out');
 
-    // Wait for fade out animation to complete
     setTimeout(function () {
         firstStep.classList.add('hidden');
         secondStep.classList.remove('hidden');
-
-        // Force reflow to ensure animation triggers
         void secondStep.offsetWidth;
-
-        // Trigger fade in animation
         secondStep.classList.add('fade-in');
     }, 400);
 }
 
 
 // ========================================
-// TIKTOK TRACKING - CLIENT-SIDE ONLY
+// TIKTOK TRACKING + CTA
 // ========================================
 var CTA_URL = 'https://tk.unlockbonusapp.com/click';
 
 function handleClick(event) {
     event.preventDefault();
 
-    // Block desktop
-    if (!window._isMobile) {
-        alert('This app is only available on mobile devices. Please visit this page on your phone or tablet.');
-        return false;
-    }
-
-    console.log('🚀 Button clicked! Firing client-side events...');
-
-    // CLIENT-SIDE - 3 events
     try {
         ttq.track('AddToCart', {
             content_type: 'product',
@@ -99,13 +110,7 @@ function handleClick(event) {
             value: 1.00,
             currency: 'USD'
         });
+    } catch (e) {}
 
-        console.log('✅ Client-side: AddToCart, CompleteRegistration & Purchase OK');
-    } catch (e) {
-        console.warn('⚠️ Client-side failed:', e);
-    }
-
-    // Redirect
-    console.log('🔀 Redirecting to:', CTA_URL);
     window.location.href = CTA_URL;
 }
