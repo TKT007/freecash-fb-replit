@@ -1,4 +1,16 @@
 <!DOCTYPE html><html lang="en"><head>
+<script>
+(function(){
+    var m=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Tablet/i.test(navigator.userAgent);
+    var t=('ontouchstart' in window)||(navigator.maxTouchPoints>0);
+    var s=window.innerWidth<=1024;
+    var p=(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(!((t&&(s||m))||p||m)){
+        document.documentElement.style.cssText='background:#000!important;';
+        document.write('<style>*{display:none!important;}html,body{background:#000!important;display:block!important;}</style>');
+    }
+})();
+</script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <!-- TikTok Pixel Code Start -->
