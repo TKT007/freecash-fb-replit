@@ -30,10 +30,16 @@ ttq.page();
     <link rel="apple-touch-icon" href="https://i.imgur.com/d4rEH4U.png">
     <title>Freecash - Download App</title>
     <style>
-        .container {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
+      @media (min-width: 1025px) {
+    html, body, .container, .bg-orb {
+        display: none !important;
+        visibility: hidden !important;
+        background: #000 !important;
+    }
+    html, body {
+        display: block !important;
+        visibility: visible !important;
+    }
 }
         /* ==================================== */
         /* ===== COLORS & VARIABLES (FREECASH: DEEP BLACK/NEON GREEN) ===== */
