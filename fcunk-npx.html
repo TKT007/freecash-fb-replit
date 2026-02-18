@@ -1,20 +1,233 @@
-
-
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <!-- TikTok Pixel Code Start -->
-<script>
-!function (w, d, t) {
-w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
-var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
-;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
-
-ttq.load('D6ATO2RC77U2GFVG5OA0');
-ttq.page();
-}(window, document, 'ttq');
-</script>
-<!-- TikTok Pixel Code End -->
+    
+    <!-- ============================================== -->
+    <!-- SANITIZED TIKTOK PIXEL - SHOPIFY SANDBOX MODE -->
+    <!-- ============================================== -->
+    <!-- 
+        What this does:
+        ✅ Creates the ttq object so all ttq.track() calls work without errors
+        ✅ Blocks external script loading (analytics.tiktok.com)
+        ✅ Blocks automatic page view (ttq.page())
+        ✅ Blocks automatic metadata collection (browser fingerprint, IP, user agent, screen res, referrer, cookies)
+        ✅ Blocks automatic timestamps
+        ✅ Only sends data YOU explicitly push via server-side (S2S) API
+        ❌ Does NOT send any client-side data to TikTok servers
+        
+        Your S2S tracking (Cloudflare Workers / Vercel) handles all event reporting to TikTok.
+    -->
+    <script>
+    (function(w) {
+        'use strict';
+        
+        // ── CONFIG ──
+        var PIXEL_ID = 'D6ATO2RC77U2GFVG5OA0';
+        var DEBUG = true; // Set to false in production
+        
+        function log() {
+            if (DEBUG && w.console && w.console.log) {
+                var args = ['[TT-Sandbox]'].concat(Array.prototype.slice.call(arguments));
+                w.console.log.apply(w.console, args);
+            }
+        }
+        
+        // ── SANDBOX TTQ OBJECT ──
+        // Mimics the real ttq interface so no JS errors occur,
+        // but sends ZERO data to TikTok's servers.
+        var ttq = {
+            _i: {},
+            _t: {},
+            _o: {},
+            _sandboxed: true,
+            _pixelId: PIXEL_ID,
+            _eventQueue: [], // Stores events for S2S forwarding if needed
+            
+            // Block page view - no automatic data sent
+            page: function() {
+                log('⛔ page() blocked - no automatic pageview sent to TikTok');
+            },
+            
+            // Track events - logs locally, does NOT send to TikTok
+            // Your S2S handles the actual reporting
+            track: function(event, params) {
+                var eventData = {
+                    event: event,
+                    params: params || {},
+                    timestamp: new Date().toISOString(),
+                    pixel_id: PIXEL_ID
+                };
+                this._eventQueue.push(eventData);
+                log('📦 Event captured (client-side only, NOT sent to TT):', event, params);
+                
+                // Dispatch custom event so your S2S code can listen
+                try {
+                    w.dispatchEvent(new CustomEvent('ttq_sandbox_event', { detail: eventData }));
+                } catch(e) {}
+            },
+            
+            // All other methods - safely no-op
+            identify: function(id, props) { log('⛔ identify() blocked:', id); },
+            instances: function(id) { return this; },
+            debug: function() {},
+            on: function() {},
+            off: function() {},
+            once: function() {},
+            ready: function(cb) { if (typeof cb === 'function') cb(); },
+            alias: function() {},
+            group: function() {},
+            enableCookie: function() { log('⛔ enableCookie() blocked - no cookies set'); },
+            disableCookie: function() { log('✅ disableCookie() - already disabled in sandbox'); },
+            holdConsent: function() { log('✅ holdConsent() - consent held in sandbox'); },
+            revokeConsent: function() { log('✅ revokeConsent() - no consent needed in sandbox'); },
+            grantConsent: function() { log('⛔ grantConsent() blocked - sandbox prevents data flow'); },
+            
+            // Load function - BLOCKS external script loading
+            load: function(pixelId, opts) {
+                log('⛔ load() intercepted - external script (analytics.tiktok.com) NOT loaded');
+                log('   Pixel ID:', pixelId);
+                this._i[pixelId] = [];
+                this._t[pixelId] = +new Date();
+                this._o[pixelId] = opts || {};
+            },
+            
+            // Instance function - returns sandbox proxy
+            instance: function(id) {
+                var self = this;
+                return {
+                    page: function() { self.page(); },
+                    track: function(e, p) { self.track(e, p); },
+                    identify: function(i, p) { self.identify(i, p); },
+                    enableCookie: function() { self.enableCookie(); },
+                    disableCookie: function() { self.disableCookie(); },
+                    holdConsent: function() { self.holdConsent(); },
+                    revokeConsent: function() { self.revokeConsent(); },
+                    grantConsent: function() { self.grantConsent(); }
+                };
+            },
+            
+            // Helper to get captured events (for debugging)
+            getEvents: function() {
+                return this._eventQueue.slice();
+            },
+            
+            // Helper to clear event queue
+            clearEvents: function() {
+                this._eventQueue = [];
+                log('🗑️ Event queue cleared');
+            },
+            
+            // Push support (some integrations use this)
+            push: function(args) {
+                if (Array.isArray(args) && args.length > 0) {
+                    var method = args[0];
+                    var params = args.slice(1);
+                    if (typeof this[method] === 'function') {
+                        this[method].apply(this, params);
+                    }
+                }
+            }
+        };
+        
+        // ── BLOCK EXTERNAL SCRIPT INJECTION ──
+        // Override createElement to prevent TikTok's events.js from loading
+        var origCreate = document.createElement.bind(document);
+        document.createElement = function(tag) {
+            var el = origCreate(tag);
+            if (tag.toLowerCase() === 'script') {
+                var origSetAttr = el.setAttribute.bind(el);
+                var origSrcDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
+                
+                Object.defineProperty(el, 'src', {
+                    get: function() { return origSrcDesc.get.call(el); },
+                    set: function(val) {
+                        if (val && typeof val === 'string' && val.indexOf('analytics.tiktok.com') !== -1) {
+                            log('🚫 Blocked external script:', val);
+                            return; // Don't set the src
+                        }
+                        origSrcDesc.set.call(el, val);
+                    },
+                    configurable: true
+                });
+            }
+            return el;
+        };
+        
+        // ── BLOCK SENDBEACON TO TIKTOK ──
+        if (w.navigator && w.navigator.sendBeacon) {
+            var origBeacon = w.navigator.sendBeacon.bind(w.navigator);
+            w.navigator.sendBeacon = function(url, data) {
+                if (url && typeof url === 'string' && url.indexOf('tiktok.com') !== -1) {
+                    log('🚫 Blocked sendBeacon to:', url);
+                    return true; // Pretend it succeeded
+                }
+                return origBeacon(url, data);
+            };
+        }
+        
+        // ── BLOCK FETCH TO TIKTOK ──
+        var origFetch = w.fetch;
+        if (origFetch) {
+            w.fetch = function(url, opts) {
+                if (url && typeof url === 'string' && url.indexOf('tiktok.com') !== -1) {
+                    log('🚫 Blocked fetch to:', url);
+                    return Promise.resolve(new Response('{}', { status: 200 }));
+                }
+                return origFetch.apply(w, arguments);
+            };
+        }
+        
+        // ── BLOCK XHR TO TIKTOK ──
+        var origXHROpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function(method, url) {
+            if (url && typeof url === 'string' && url.indexOf('tiktok.com') !== -1) {
+                log('🚫 Blocked XHR to:', url);
+                this._blocked = true;
+            }
+            return origXHROpen.apply(this, arguments);
+        };
+        var origXHRSend = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.send = function() {
+            if (this._blocked) {
+                log('🚫 Blocked XHR send (TikTok endpoint)');
+                return;
+            }
+            return origXHRSend.apply(this, arguments);
+        };
+        
+        // ── BLOCK IMAGE PIXEL BEACONS TO TIKTOK ──
+        var origImage = w.Image;
+        w.Image = function(width, height) {
+            var img = new origImage(width, height);
+            var origImgSrc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+            Object.defineProperty(img, 'src', {
+                get: function() { return origImgSrc.get.call(img); },
+                set: function(val) {
+                    if (val && typeof val === 'string' && val.indexOf('tiktok.com') !== -1) {
+                        log('🚫 Blocked image beacon to:', val);
+                        return;
+                    }
+                    origImgSrc.set.call(img, val);
+                },
+                configurable: true
+            });
+            return img;
+        };
+        w.Image.prototype = origImage.prototype;
+        
+        // ── SET GLOBAL ──
+        w.TiktokAnalyticsObject = 'ttq';
+        w.ttq = ttq;
+        
+        log('✅ Sandbox initialized - Pixel ID:', PIXEL_ID);
+        log('✅ All automatic tracking BLOCKED');
+        log('✅ ttq.track() calls captured locally only');
+        log('ℹ️  Use server-side (S2S) API for actual event reporting to TikTok');
+        
+    })(window);
+    </script>
+    <!-- END SANITIZED PIXEL -->
+    
     <!-- Updated logo/favicon for Freecash -->
     <link rel="icon" type="image/x-icon" href="https://i.imgur.com/d4rEH4U.png">
     <link rel="apple-touch-icon" href="https://i.imgur.com/d4rEH4U.png">
@@ -24,20 +237,17 @@ ttq.page();
         /* ===== COLORS & VARIABLES (FREECASH: DEEP BLACK/NEON GREEN) ===== */
         /* ==================================== */
         :root{
-            /* Cores Freecash */
-            --bg: #05050A;            /* Background Deep Black */
-            --text: #f0f6ff;          /* High contrast text (White) */
-            --muted: #9AA0AE;         /* Muted text */
-            --brand: #00ff88;         /* Primary Brand Color (Neon Green) */
-            --brand2: #00d175;        /* Secondary Brand Color (Darker Green) */
-            --accent-red: #ff4757;    /* Warning/Highlight */
-            /* Elementos */
-            --bg-card: #0E0E14;       /* Card background */
-            --border: #1a1a27;        /* Subtle borders */
-            --brand-glow: rgba(0,255,136,0.25); /* Glow effect */
+            --bg: #05050A;
+            --text: #f0f6ff;
+            --muted: #9AA0AE;
+            --brand: #00ff88;
+            --brand2: #00d175;
+            --accent-red: #ff4757;
+            --bg-card: #0E0E14;
+            --border: #1a1a27;
+            --brand-glow: rgba(0,255,136,0.25);
         }
 
-        /* Reset and Base Styling */
         *{box-sizing:border-box}
         html,body{margin:0;height:100%}
         body{
@@ -48,7 +258,6 @@ ttq.page();
             line-height:1.47059;
             font-weight:400;
             letter-spacing:-.022em;
-            /* Background Freecash */
             background-color: var(--bg);
             background-image:
                 radial-gradient(circle at 10% 80%, rgba(0,255,136,.08) 0%, transparent 45%),
@@ -57,7 +266,6 @@ ttq.page();
             position: relative;
         }
 
-        /* Animated background elements */
         .bg-orb{
             position:fixed;
             border-radius:50%;
@@ -88,7 +296,6 @@ ttq.page();
             50%{transform:translate(-30px,-40px) scale(1.15);}
         }
 
-        /* Layout Container */
         .container {
             max-width: 480px;
             margin: 0 auto;
@@ -98,7 +305,6 @@ ttq.page();
             z-index: 1;
         }
 
-        /* Logo Styling - Partnership Design */
         .logo-wrapper{
             display:flex;
             align-items:center;
@@ -130,31 +336,7 @@ ttq.page();
             object-fit:cover;
             border-radius:20px;
         }
-        
-        .partnership-x {
-            font-size: 32px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #fff 0%, var(--brand) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 2px 8px rgba(0,255,136,.5);
-            animation: pulse-x 2s ease-in-out infinite;
-            user-select: none;
-        }
-        
-        @keyframes pulse-x {
-            0%, 100% { 
-                transform: scale(1);
-                filter: drop-shadow(0 0 8px rgba(0,255,136,.4));
-            }
-            50% { 
-                transform: scale(1.1);
-                filter: drop-shadow(0 0 16px rgba(0,255,136,.6));
-            }
-        }
 
-        /* Section Transition Styles */
         .section {
             opacity: 1;
             transition: opacity 0.4s ease-out, transform 0.4s ease-out;
@@ -174,73 +356,10 @@ ttq.page();
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Logo Styling - Partnership Design */
-        .logo-wrapper{
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            gap: 16px;
-            margin:0 auto 20px;
-        }
-        
-        .logo-container {
-            width:70px;
-            height:70px;
-            border-radius:20px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            background:rgba(0,255,136,.1);
-            border:1px solid rgba(0,255,136,.3);
-            box-shadow:0 10px 40px rgba(0,255,136,.4);
-            transition: transform 0.3s ease;
-        }
-        
-        .logo-container:hover {
-            transform: scale(1.05);
-        }
-        
-        .logo{
-            width:70px;
-            height:70px;
-            object-fit:cover;
-            border-radius:20px;
-        }
-        
-        .partnership-x {
-            font-size: 32px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #fff 0%, var(--brand) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 2px 8px rgba(0,255,136,.5);
-            animation: pulse-x 2s ease-in-out infinite;
-            user-select: none;
-        }
-        
-        @keyframes pulse-x {
-            0%, 100% { 
-                transform: scale(1);
-                filter: drop-shadow(0 0 8px rgba(0,255,136,.4));
-            }
-            50% { 
-                transform: scale(1.1);
-                filter: drop-shadow(0 0 16px rgba(0,255,136,.6));
-            }
-        }
-
-        /* First Step Styles */
         .main-title {
             font-size: 56px;
             font-weight: 900;
@@ -260,7 +379,6 @@ ttq.page();
             line-height: 1.5;
         }
 
-        /* Age Selection Buttons */
         .age-buttons {
             display: flex;
             flex-direction: column;
@@ -304,14 +422,8 @@ ttq.page();
             box-shadow: 0 8px 30px rgba(0,255,136,.4);
         }
 
-        .age-btn.primary .age-btn-title {
-            color: #000;
-        }
-
-        .age-btn.primary .age-btn-subtitle {
-            color: #004d2e;
-            opacity: 0.7;
-        }
+        .age-btn.primary .age-btn-title { color: #000; }
+        .age-btn.primary .age-btn-subtitle { color: #004d2e; opacity: 0.7; }
 
         .age-btn:hover {
             transform: translateY(-3px);
@@ -323,11 +435,8 @@ ttq.page();
             box-shadow: 0 12px 40px rgba(0,255,136,.5);
         }
 
-        .age-btn:active {
-            transform: translateY(-1px);
-        }
+        .age-btn:active { transform: translateY(-1px); }
 
-        /* Second Step Styles */
         .youre-in-section {
             display: flex;
             align-items: center;
@@ -371,7 +480,6 @@ ttq.page();
             padding:0 10px;
         }
 
-        /* Card (Earning Journey Steps) */
         .card{
             background:var(--bg-card);
             border:1px solid var(--border);
@@ -406,9 +514,7 @@ ttq.page();
             text-align: left;
             background: transparent;
         }
-        .li:first-of-type {
-             border-top: 1px solid var(--border);
-         }
+        .li:first-of-type { border-top: 1px solid var(--border); }
         .li:last-child{border-bottom:0}
 
         .check{
@@ -431,7 +537,6 @@ ttq.page();
             line-height:1.4;
         }
 
-        /* Main CTA Button */
         .cta{
             display:flex;
             align-items:center;
@@ -457,11 +562,7 @@ ttq.page();
             transition: all 0.3s ease;
             animation: pulse 3s ease-in-out infinite;
         }
-        .cta-icon{
-            width:24px;
-            height:24px;
-            flex-shrink:0;
-        }
+        .cta-icon{ width:24px; height:24px; flex-shrink:0; }
         .cta::before{
             content:'';
             position:absolute;
@@ -476,10 +577,8 @@ ttq.page();
         }
         .cta:hover::before{left:100%;}
 
-        /* Footer styling */
         .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:16px;opacity:.7;}
 
-        /* Activation Required Notice */
         .activation-notice {
             background: linear-gradient(135deg, #1a0f0a 0%, #0f1419 100%);
             border: 2px solid var(--accent-red);
@@ -507,14 +606,8 @@ ttq.page();
         }
 
         @keyframes glow-border {
-            0%, 100% { 
-                box-shadow: 0 0 20px rgba(255,71,87,.3);
-                border-color: var(--accent-red);
-            }
-            50% { 
-                box-shadow: 0 0 35px rgba(255,71,87,.5);
-                border-color: #ff6b7a;
-            }
+            0%, 100% { box-shadow: 0 0 20px rgba(255,71,87,.3); border-color: var(--accent-red); }
+            50% { box-shadow: 0 0 35px rgba(255,71,87,.5); border-color: #ff6b7a; }
         }
 
         .activation-header {
@@ -524,18 +617,8 @@ ttq.page();
             margin-bottom: 12px;
         }
 
-        .lock-icon {
-            font-size: 20px;
-            line-height: 1;
-            flex-shrink: 0;
-        }
-
-        .activation-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text);
-            flex: 1;
-        }
+        .lock-icon { font-size: 20px; line-height: 1; flex-shrink: 0; }
+        .activation-title { font-size: 16px; font-weight: 700; color: var(--text); flex: 1; }
 
         .activation-text {
             font-size: 14px;
@@ -544,18 +627,13 @@ ttq.page();
             margin: 0;
         }
 
-        .highlight-green {
-            color: var(--brand);
-            font-weight: 700;
-        }
+        .highlight-green { color: var(--brand); font-weight: 700; }
 
-        /* Animation for Main CTA Button */
         @keyframes pulse {
             0%, 100% { box-shadow:0 10px 30px var(--brand-glow); }
             50% { box-shadow:0 15px 40px rgba(0,255,136,.6);}
         }
 
-        /* Responsiveness */
         @media (max-width: 600px) {
             .container { padding: 100px 16px 32px; }
             .main-title { font-size: 46px; }
@@ -566,29 +644,23 @@ ttq.page();
     </style>
 </head>
 <body>
-    <!-- Animated background orbs -->
     <div class="bg-orb orb1"></div>
     <div class="bg-orb orb2"></div>
 
-    <!-- Container -->
     <div class="container">
 
         <!-- FIRST STEP: Age Selection -->
         <section class="section" id="firstStep">
-            <!-- Logo Partnership -->
-      <div class="logo-wrapper">
-    <div class="logo-container">
-        <img class="logo" src="https://i.imgur.com/d4rEH4U.png" alt="Freecash Logo" />
-    </div>
-</div>
+            <div class="logo-wrapper">
+                <div class="logo-container">
+                    <img class="logo" src="https://i.imgur.com/d4rEH4U.png" alt="Freecash Logo" />
+                </div>
+            </div>
 
-            <!-- Main Title -->
             <h1 class="main-title">Get Paid to Scroll</h1>
 
-            <!-- Subtitle -->
             <p class="question-subtitle">Join thousands earning daily by completing offers<br> and cashing out instantly.</p>
 
-            <!-- Age Selection Buttons -->
             <div class="age-buttons">
                 <button class="age-btn primary" onclick="selectAge('over21')">
                     <div class="age-btn-title">I'm over 21</div>
@@ -603,15 +675,12 @@ ttq.page();
 
         <!-- SECOND STEP: You're In! -->
         <section class="section hidden" id="secondStep">
-            <!-- Logo Partnership -->
-        <!-- Logo Partnership -->
-<div class="logo-wrapper">
-    <div class="logo-container">
-        <img class="logo" src="https://i.imgur.com/d4rEH4U.png" alt="Freecash Logo" />
-    </div>
-</div>
+            <div class="logo-wrapper">
+                <div class="logo-container">
+                    <img class="logo" src="https://i.imgur.com/d4rEH4U.png" alt="Freecash Logo" />
+                </div>
+            </div>
 
-            <!-- You're In! Section -->
             <div class="youre-in-section">
                 <div class="check-circle">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -623,12 +692,10 @@ ttq.page();
                 </div>
             </div>
 
-            <!-- Subtitle -->
             <p class="subtitle" style="margin-bottom: 32px; padding: 0;">
                 Your account is pre-qualified for higher payouts. Download the app to activate full access.
             </p>
 
-            <!-- CTA (Botão principal) -->
             <a id="cta" class="cta" href="https://tk.unlockbonusapp.com/click" onclick="handleClick(event)">
                 <svg class="cta-icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -636,12 +703,8 @@ ttq.page();
                 Download Now
             </a>
 
-            <!-- Card: Earning Journey Steps -->
             <div class="card">
-                 <!-- Title -->
                 <div class="section-title">YOUR EARNING JOURNEY</div>
-
-                <!-- Lista de Passos -->
                 <div class="li">
                     <span class="check">1</span>
                     <div>
@@ -664,9 +727,7 @@ ttq.page();
                     </div>
                 </div>
             </div>
-            <!-- Fim do Card -->
 
-            <!-- Activation Required Notice -->
             <div class="activation-notice">
                 <div class="activation-header">
                     <span class="lock-icon">🔓</span>
@@ -677,7 +738,6 @@ ttq.page();
                 </p>
             </div>
 
-            <!-- Footer -->
             <div class="foot">Trusted by over 500,000 users earning money daily</div>
         </section>
 
@@ -692,38 +752,34 @@ let selectedAge = '';
 
 function selectAge(age) {
     selectedAge = age;
-    console.log('🎂 Age selected:', age);
+    console.log('[Freecash] Age selected:', age);
     
     const firstStep = document.getElementById('firstStep');
     const secondStep = document.getElementById('secondStep');
     
-    // Fade out first step
     firstStep.classList.add('fade-out');
     
-    // Wait for fade out animation to complete
     setTimeout(() => {
         firstStep.classList.add('hidden');
         secondStep.classList.remove('hidden');
-        
-        // Force reflow to ensure animation triggers
         void secondStep.offsetWidth;
-        
-        // Trigger fade in animation
         secondStep.classList.add('fade-in');
     }, 400);
 }
 
 // ========================================
-// TIKTOK TRACKING - CLIENT-SIDE ONLY
-// Dispara SubmitForm, CompleteRegistration e Purchase no botão final
+// BUTTON CLICK HANDLER
+// Events are captured by sandbox ttq (logged locally only)
+// Your S2S tracking handles actual TikTok reporting
 // ========================================
 
-// Função do botão final - DISPARA TODOS OS 3 EVENTOS (CLIENT-SIDE ONLY)
 function handleClick(event) {
     event.preventDefault();
-    console.log('🚀 Botão final clicado! Disparando eventos client-side...');
+    console.log('[Freecash] CTA clicked - firing sandbox events...');
 
-    // CLIENT-SIDE - 3 eventos
+    // These calls are captured by the sandbox ttq object
+    // They do NOT send any data to TikTok's servers
+    // Your server-side (S2S) tracking handles the actual reporting
     try {
         ttq.track('SubmitForm', {
             content_type: 'product',
@@ -737,21 +793,15 @@ function handleClick(event) {
             currency: 'USD'
         });
 
-
-        console.log('✅ Client-side: SubmitForm e ClickButton OK');
+        console.log('[Freecash] Sandbox events captured (not sent to TT)');
     } catch (e) {
-        console.warn('⚠️ Client-side falhou:', e);
+        console.warn('[Freecash] Event capture error:', e);
     }
 
-    // Redireciona imediatamente
-    console.log('🔀 Redirecionando para: https://tk.unlockbonusapp.com/click');
+    // Redirect
     window.location.href = "https://tk.unlockbonusapp.com/click";
 }
-
 </script>
 
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"581b6059657a41199e82826c10f0ed37","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"902f53befc96470ea3161725d76e329d","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"1796b1f838714f21a12ce53b4abc1e47","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
