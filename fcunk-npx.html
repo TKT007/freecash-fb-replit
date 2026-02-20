@@ -3,18 +3,162 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     
     <!-- ============================================== -->
-    <!-- TIKTOK PIXEL - REAL (Detectable by Helper)     -->
-    <!-- No ttq.page() - no automatic pageview          -->
+    <!-- SANITIZED TIKTOK PIXEL - SANDBOX MODE          -->
+    <!-- Pixel Helper CANNOT detect this pixel          -->
+    <!-- No metadata sent, no external scripts loaded   -->
     <!-- Fires on 2 events only: SubmitForm + ClickButton -->
-    <!-- content_type: signup | value: 0.5 USD          -->
+    <!-- S2S handles actual reporting to TikTok         -->
     <!-- ============================================== -->
     <script>
-    !function (w, d, t) {
-        w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src=r+"?sdkid="+e+"&lib="+t;var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(a,s)};
+    (function(w) {
+        'use strict';
         
-        ttq.load('D6ATO2RC77U2GFVG5OA0');
-        // NO ttq.page() - no automatic pageview fired
-    }(window, document, 'ttq');
+        var PIXEL_ID = 'D6ATO2RC77U2GFVG5OA0';
+        var DEBUG = true;
+        
+        function log() {
+            if (DEBUG && w.console && w.console.log) {
+                var args = ['[TT-Sandbox]'].concat(Array.prototype.slice.call(arguments));
+                w.console.log.apply(w.console, args);
+            }
+        }
+        
+        var ttq = {
+            _i: {}, _t: {}, _o: {},
+            _sandboxed: true,
+            _pixelId: PIXEL_ID,
+            _eventQueue: [],
+            
+            page: function() { log('⛔ page() blocked'); },
+            
+            track: function(event, params) {
+                var eventData = { event: event, params: params || {}, timestamp: new Date().toISOString(), pixel_id: PIXEL_ID };
+                this._eventQueue.push(eventData);
+                log('📦 Event captured (NOT sent to TT):', event, params);
+                try { w.dispatchEvent(new CustomEvent('ttq_sandbox_event', { detail: eventData })); } catch(e) {}
+            },
+            
+            identify: function() {},
+            instances: function() { return this; },
+            debug: function() {},
+            on: function() {},
+            off: function() {},
+            once: function() {},
+            ready: function(cb) { if (typeof cb === 'function') cb(); },
+            alias: function() {},
+            group: function() {},
+            enableCookie: function() {},
+            disableCookie: function() {},
+            holdConsent: function() {},
+            revokeConsent: function() {},
+            grantConsent: function() {},
+            
+            load: function(pixelId, opts) {
+                log('⛔ load() intercepted - external script NOT loaded');
+                this._i[pixelId] = [];
+                this._t[pixelId] = +new Date();
+                this._o[pixelId] = opts || {};
+            },
+            
+            instance: function(id) {
+                var self = this;
+                return {
+                    page: function() { self.page(); },
+                    track: function(e, p) { self.track(e, p); },
+                    identify: function() {},
+                    enableCookie: function() {},
+                    disableCookie: function() {},
+                    holdConsent: function() {},
+                    revokeConsent: function() {},
+                    grantConsent: function() {}
+                };
+            },
+            
+            getEvents: function() { return this._eventQueue.slice(); },
+            clearEvents: function() { this._eventQueue = []; },
+            
+            push: function(args) {
+                if (Array.isArray(args) && args.length > 0) {
+                    var method = args[0];
+                    var params = args.slice(1);
+                    if (typeof this[method] === 'function') this[method].apply(this, params);
+                }
+            }
+        };
+        
+        // Block external script injection
+        var origCreate = document.createElement.bind(document);
+        document.createElement = function(tag) {
+            var el = origCreate(tag);
+            if (tag.toLowerCase() === 'script') {
+                var origSrcDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
+                Object.defineProperty(el, 'src', {
+                    get: function() { return origSrcDesc.get.call(el); },
+                    set: function(val) {
+                        if (val && typeof val === 'string' && val.indexOf('analytics.tiktok.com') !== -1) { log('🚫 Blocked script:', val); return; }
+                        origSrcDesc.set.call(el, val);
+                    },
+                    configurable: true
+                });
+            }
+            return el;
+        };
+        
+        // Block sendBeacon
+        if (w.navigator && w.navigator.sendBeacon) {
+            var origBeacon = w.navigator.sendBeacon.bind(w.navigator);
+            w.navigator.sendBeacon = function(url, data) {
+                if (url && typeof url === 'string' && url.indexOf('tiktok.com') !== -1) { return true; }
+                return origBeacon(url, data);
+            };
+        }
+        
+        // Block fetch
+        var origFetch = w.fetch;
+        if (origFetch) {
+            w.fetch = function(url, opts) {
+                if (url && typeof url === 'string' && url.indexOf('tiktok.com') !== -1) { return Promise.resolve(new Response('{}', { status: 200 })); }
+                return origFetch.apply(w, arguments);
+            };
+        }
+        
+        // Block XHR
+        var origXHROpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function(method, url) {
+            if (url && typeof url === 'string' && url.indexOf('tiktok.com') !== -1) { this._blocked = true; }
+            return origXHROpen.apply(this, arguments);
+        };
+        var origXHRSend = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.send = function() {
+            if (this._blocked) { return; }
+            return origXHRSend.apply(this, arguments);
+        };
+        
+        // Block image beacons
+        var origImage = w.Image;
+        w.Image = function(width, height) {
+            var img = new origImage(width, height);
+            var origImgSrc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+            Object.defineProperty(img, 'src', {
+                get: function() { return origImgSrc.get.call(img); },
+                set: function(val) {
+                    if (val && typeof val === 'string' && val.indexOf('tiktok.com') !== -1) { return; }
+                    origImgSrc.set.call(img, val);
+                },
+                configurable: true
+            });
+            return img;
+        };
+        w.Image.prototype = origImage.prototype;
+        
+        w.TiktokAnalyticsObject = 'ttq';
+        w.ttq = ttq;
+        
+        log('✅ Sandbox active - Pixel Helper CANNOT detect this pixel');
+        log('✅ All outbound to TikTok blocked');
+        log('ℹ️  S2S handles actual event reporting');
+        
+    })(window);
     </script>
     
     <link rel="icon" type="image/x-icon" href="https://i.imgur.com/d4rEH4U.png">
