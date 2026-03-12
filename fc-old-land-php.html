@@ -14,6 +14,18 @@ ttq.page();
 }(window, document, 'ttq');
 </script>
 <!-- TikTok Pixel Code End -->
+<!-- Snap Pixel Code -->
+<script type='text/javascript'>
+(function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function()
+{a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};
+a.queue=[];var s='script';r=t.createElement(s);r.async=!0;
+r.src=n;var u=t.getElementsByTagName(s)[0];
+u.parentNode.insertBefore(r,u);
+})(window,document,'https://sc-static.net/scevent.min.js');
+snaptr('init', 'fe2be5b9-b75b-4121-822a-de8a2b7d6013', {});
+snaptr('track', 'PAGE_VIEW');
+</script>
+<!-- End Snap Pixel Code -->
     <!-- Updated logo/favicon for Freecash -->
     <link rel="icon" type="image/x-icon" href="https://i.imgur.com/d4rEH4U.png">
     <link rel="apple-touch-icon" href="https://i.imgur.com/d4rEH4U.png">
@@ -720,9 +732,8 @@ function selectAge(age) {
 // Função do botão final - DISPARA TODOS OS 3 EVENTOS (CLIENT-SIDE ONLY)
 function handleClick(event) {
     event.preventDefault();
-    console.log('🚀 Botão final clicado! Disparando eventos client-side...');
 
-    // CLIENT-SIDE - 3 eventos
+    // TikTok
     try {
         ttq.track('AddToCart', {
             content_type: 'product',
@@ -730,29 +741,29 @@ function handleClick(event) {
             value: 1.00,
             currency: 'USD'
         });
-
         ttq.track('CompleteRegistration', {
             content_type: 'product',
             content_id: 'freecash-tiktok-rewards',
             value: 1.00,
             currency: 'USD'
         });
-
         ttq.track('Purchase', {
             content_type: 'product',
             content_id: 'freecash-tiktok-rewards',
             value: 1.00,
             currency: 'USD'
         });
+    } catch (e) {}
 
-        console.log('✅ Client-side: AddToCart, CompleteRegistration e Purchase OK');
-    } catch (e) {
-        console.warn('⚠️ Client-side falhou:', e);
-    }
+    // Snap
+    try {
+        snaptr('track', 'SIGN_UP');
+    } catch (e) {}
 
-    // Redireciona imediatamente
-    console.log('🔀 Redirecionando para: https://trkio.org/aff_c?offer_id=3819&aff_id=1497&source=R');
-    window.location.href = "https://trkio.org/aff_c?offer_id=3819&aff_id=1497&source=R";
+    // Redirect
+    setTimeout(() => {
+        window.location.href = "https://trkio.org/aff_c?offer_id=3819&aff_id=1497&source=R";
+    }, 300);
 }
 
 </script>
