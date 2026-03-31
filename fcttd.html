@@ -524,9 +524,9 @@ function handleClick(event) {
         ? `${baseUrl}&source=${encodeURIComponent(utmContent)}`
         : baseUrl;
 
-    // Axon Pixel — dispara sign_up no clique do botão
+    // Axon Pixel — dispara generate_lead no clique do botão
     try {
-        axon("track", "sign_up", { method: "app_download" });
+        axon("track", "generate_lead", { currency: "USD", value: 1.00 });
     } catch(e) {}
 
     setTimeout(() => {
