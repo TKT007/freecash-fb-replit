@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base href="/">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>Swagbucks</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{margin:0!important;padding:0!important;background:#0a0e1a!important;font-family:'Nunito',-apple-system,BlinkMacSystemFont,sans-serif;overflow-x:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+
+:root{
+  --brand: #38bdf8;
+  --brand2: #0ea5e9;
+  --brand3: #0284c7;
+  --bg: #0a0e1a;
+  --bg-card: #111827;
+  --border: rgba(56,189,248,.2);
+  --glow: rgba(56,189,248,.5);
+  --red: #f87171;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+}
+
+.fc{min-height:100vh;min-height:100dvh;background:var(--bg);padding:.75rem;display:flex;flex-direction:column;
+  background-image:
+    radial-gradient(ellipse at 15% 0%, rgba(56,189,248,.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 100%, rgba(14,165,233,.08) 0%, transparent 55%);
+}
+.fc-i{max-width:26rem;margin:0 auto;width:100%;flex:1;display:flex;flex-direction:column}
+
+/* Hero */
+.hero{text-align:center;padding:.25rem 0 .75rem}
+
+/* Logo */
+.logo-wrap{position:relative;width:96px;height:96px;margin:0 auto .85rem;display:flex;align-items:center;justify-content:center}
+.logo-glow{position:absolute;inset:-8px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.65) 0%,rgba(56,189,248,.25) 45%,rgba(56,189,248,0) 75%);filter:blur(8px);animation:pulseGlow 2.4s ease-in-out infinite;z-index:1}
+.logo-glow.outer{inset:-16px;background:radial-gradient(circle,rgba(56,189,248,.35) 0%,rgba(56,189,248,0) 70%);filter:blur(14px);animation:pulseGlow 2.4s ease-in-out infinite;animation-delay:.3s}
+.logo{position:relative;z-index:2;width:80px;height:80px;border-radius:.9rem;display:block;object-fit:cover;animation:floatLogo 3.2s ease-in-out infinite;box-shadow:0 0 24px rgba(56,189,248,.45),0 0 48px rgba(56,189,248,.25)}
+@keyframes pulseGlow{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
+@keyframes floatLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+.h1{font-size:1.75rem;font-weight:900;color:var(--text);line-height:1.15;margin-bottom:.25rem}
+.accent{color:var(--brand)}
+.sub{color:#7dd3fc;font-size:.9rem;margin-bottom:.5rem;font-weight:700}
+
+.pill{display:inline-flex;align-items:center;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.25);border-radius:.75rem;padding:.5rem 1rem;margin-bottom:.75rem}
+.pill-txt{color:var(--muted);font-size:.9rem;margin-right:.4rem}
+.pill-amt{color:var(--text);font-size:1.1rem;font-weight:800}
+.pill-amt b{color:var(--brand)}
+
+/* Steps */
+.steps-lbl{color:#64748b;font-size:.6rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin:0 0 .5rem}
+.stp{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:.7rem;padding:.75rem .9rem;margin-bottom:.45rem;display:flex;align-items:center;gap:.7rem}
+.stp-hi{background:rgba(56,189,248,.06);border-color:rgba(56,189,248,.3)}
+.stp-num{min-width:1.65rem;width:1.65rem;height:1.65rem;background:linear-gradient(135deg,var(--brand),var(--brand3));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 0 12px rgba(56,189,248,.5)}
+.stp-txt{flex:1}
+.stp-title{color:var(--text);font-size:.9rem;font-weight:800}
+.stp-desc{color:var(--muted);font-size:.8rem;line-height:1.3;font-weight:700;margin-top:.15rem}
+.tag{display:inline-block;background:rgba(56,189,248,.18);color:var(--brand);font-size:.6rem;font-weight:800;padding:.2rem .45rem;border-radius:.25rem;margin-left:.4rem;border:1px solid rgba(56,189,248,.3)}
+
+/* CTA */
+.cta{width:100%;background:linear-gradient(135deg,var(--brand),var(--brand3));color:#05050A;font-family:'Nunito',sans-serif;font-weight:900;font-size:1.1rem;padding:1rem;border:none;border-radius:.75rem;cursor:pointer;margin:.75rem 0 .9rem;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:opacity .15s,transform .15s;box-shadow:0 4px 28px rgba(14,165,233,.5);display:flex;align-items:center;justify-content:center;gap:.6rem}
+.cta:active{opacity:.8;transform:scale(.98)}
+.cta svg{width:22px;height:22px;flex-shrink:0}
+
+/* Tasks grid */
+.games-lbl{color:#64748b;font-size:.6rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin:0 0 .65rem}
+.games{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-bottom:.85rem}
+.game{background:#111827;border:1px solid rgba(56,189,248,.25);border-radius:.85rem;padding:.8rem .95rem;position:relative;overflow:hidden;min-height:96px;display:flex;flex-direction:row;align-items:center;gap:.9rem;box-shadow:0 6px 24px rgba(14,165,233,.15),0 2px 8px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);cursor:pointer;text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent;transition:transform .15s,box-shadow .15s,border-color .15s}
+.game:active{transform:scale(.98)}
+.game:hover{border-color:rgba(56,189,248,.5);box-shadow:0 8px 28px rgba(14,165,233,.28),0 2px 8px rgba(0,0,0,.4)}
+
+.game-ico{font-size:2.4rem;line-height:1;flex-shrink:0;animation:gameFloat 3.4s ease-in-out infinite}
+.game:nth-child(2) .game-ico{animation-delay:.8s}
+@keyframes gameFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+.game-name{color:var(--text);font-size:.95rem;font-weight:800;margin-bottom:.15rem}
+.game-rate{color:var(--brand);font-size:1.4rem;font-weight:900;line-height:1;text-shadow:0 0 14px rgba(56,189,248,.5)}
+.game-rate-lbl{color:var(--muted);font-size:.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:.2rem}
+
+.live-dot{display:inline-flex;align-items:center;gap:.3rem;padding:.15rem .4rem;background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.35);border-radius:.3rem;font-size:.55rem;font-weight:800;letter-spacing:.5px;color:#7dd3fc;text-transform:uppercase;align-self:flex-start;margin-top:.35rem}
+.live-dot::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--brand);box-shadow:0 0 6px rgba(56,189,248,.9);animation:livePulse 1.4s ease-in-out infinite}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Footer */
+.ftr{margin-top:auto;padding-top:.5rem;text-align:center}
+.ftr-stars{display:flex;align-items:center;justify-content:center;gap:.3rem;margin-bottom:.25rem}
+.stars-ico{color:#fbbf24;font-size:.9rem;letter-spacing:1px}
+.stars-num{color:var(--text);font-size:.9rem;font-weight:700}
+.stars-txt{color:var(--muted);font-size:.8rem}
+.payouts{color:#64748b;font-size:.75rem}
+
+/* Responsive */
+@media(max-width:480px){
+  .h1{font-size:1.6rem;line-height:1.12}
+  .pill-amt{font-size:1rem}
+  .stp{padding:.7rem .8rem}
+  .stp-title{font-size:.88rem}
+  .stp-desc{font-size:.78rem}
+  .cta{font-size:1.05rem;padding:1rem;min-height:54px}
+  .game{padding:.7rem .65rem;gap:.6rem;min-height:88px}
+  .game-ico{font-size:2rem}
+  .game-name{font-size:.85rem}
+  .game-rate{font-size:1.2rem}
+}
+@media(max-width:360px){
+  .h1{font-size:1.45rem}
+  .game{padding:.6rem .55rem;gap:.5rem;min-height:82px}
+  .game-ico{font-size:1.7rem}
+  .game-name{font-size:.8rem}
+  .game-rate{font-size:1.05rem}
+  .games{gap:.45rem}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
+html{-webkit-overflow-scrolling:touch}
+.cta,.game{min-height:48px}
+button.cta{-webkit-appearance:none;appearance:none}
+
+.activation-notice{background:linear-gradient(135deg,#050e1a 0%,#0a0f19 100%);border:2px solid #ff4757;border-radius:16px;padding:16px 20px;margin-top:20px;text-align:left;position:relative;animation:glow-border 2s ease-in-out infinite;}
+.activation-notice::before{content:'⚠️ IMPORTANT';position:absolute;top:-1px;right:20px;background:#ff4757;color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:0 0 8px 8px;letter-spacing:.5px;}
+@keyframes glow-border{0%,100%{box-shadow:0 0 20px rgba(255,71,87,.3);border-color:#ff4757}50%{box-shadow:0 0 35px rgba(255,71,87,.5);border-color:#ff6b7a}}
+.activation-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.lock-icon{font-size:20px;line-height:1;flex-shrink:0;}
+.activation-title{font-size:15px;font-weight:800;color:#f1f5f9;}
+.activation-text{font-size:13px;color:#94a3b8;line-height:1.5;margin:0;}
+.highlight-blue{color:#38bdf8;font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="fc">
+  <div class="fc-i">
+
+    <div class="hero">
+      <div class="logo-wrap">
+        <div class="logo-glow outer"></div>
+        <div class="logo-glow"></div>
+        <img class="logo" src="https://play-lh.googleusercontent.com/8W0X_YPilF1Rn82UqNdrH1hIwSiqdQGNlrEp3pwAstF-fdgLMv1_5TXcilBQThZ35w" alt="Swagbucks" decoding="async" fetchpriority="high">
+      </div>
+      <h1 class="h1">Get Paid to<br><span class="accent">Play Games!</span></h1>
+      <p class="sub">Turn your screen time into real cash</p>
+      <div class="pill">
+        <span class="pill-txt">Earn up to</span>
+        <span class="pill-amt"><b>$</b>500/week</span>
+      </div>
+    </div>
+
+    <p class="steps-lbl">3 simple steps</p>
+
+    <div class="stp">
+      <div class="stp-num">1</div>
+      <div class="stp-txt">
+        <div class="stp-title">Download the Swagbucks App</div>
+        <div class="stp-desc">Free on iOS &amp; Android — takes less than 60 seconds</div>
+      </div>
+    </div>
+
+    <div class="stp stp-hi">
+      <div class="stp-num">2</div>
+      <div class="stp-txt">
+        <div class="stp-title">Complete Daily Offers <span class="tag">IMPORTANT</span></div>
+        <div class="stp-desc">Watch videos, test apps &amp; games, or take surveys!</div>
+      </div>
+    </div>
+
+    <div class="stp">
+      <div class="stp-num">3</div>
+      <div class="stp-txt">
+        <div class="stp-title">Cash Out Your Earnings</div>
+        <div class="stp-desc">Instant Payouts: PayPal, CashApp, Venmo, Crypto &amp; Wire</div>
+      </div>
+    </div>
+
+    <button class="cta" id="ctaBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Download Now — It's Free
+    </button>
+
+    <div class="activation-notice">
+      <div class="activation-header">
+        <span class="lock-icon">🔓</span>
+        <span class="activation-title">Activation Required</span>
+      </div>
+      <p class="activation-text">New users: Complete <span class="highlight-blue">2 quick offers</span> to unlock full access and start earning.</p>
+    </div>
+
+    <div class="ftr">
+      <div class="ftr-stars">
+        <span class="stars-ico">★★★★★</span>
+        <span class="stars-num">4.8</span>
+        <span class="stars-txt">· 300,000+ reviews</span>
+      </div>
+      <div class="payouts">PayPal · CashApp · Venmo · Crypto · Wire</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var OFFER_URL = 'https://go.unlockbonusapp.com/click';
+  var ctaBtn = document.getElementById('ctaBtn');
+  var opened = false;
+
+  function goToOffer() {
+    try {
+      var dest = new URL(OFFER_URL);
+      var incoming = new URL(window.location.href);
+      incoming.searchParams.forEach(function(value, key) {
+        dest.searchParams.set(key, value);
+      });
+      window.location.href = dest.toString();
+    } catch(e) {
+      window.location.href = OFFER_URL;
+    }
+  }
+
+  ctaBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    if (opened) return;
+    opened = true;
+    ctaBtn.disabled = true;
+    goToOffer();
+  });
+})();
+</script>
+
+</body>
+</html>
