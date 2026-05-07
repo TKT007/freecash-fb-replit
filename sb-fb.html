@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Swagbucks - Earn Gift Cards</title>
+    <style>
+        :root{
+            --bg: #05050A;
+            --text: #f0f6ff;
+            --muted: #9AA0AE;
+            --brand: #38bdf8;
+            --brand2: #0ea5e9;
+            --accent-red: #ff4757;
+            --bg-card: #0E0E14;
+            --border: #1a1a27;
+            --brand-glow: rgba(56,189,248,0.25);
+        }
+        *{box-sizing:border-box}
+        html,body{margin:0;height:100%}
+        body{
+            color:var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow-x:hidden;
+            min-height:100vh;
+            line-height:1.47059;
+            font-weight:400;
+            letter-spacing:-.022em;
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(circle at 10% 80%, rgba(56,189,248,.08) 0%, transparent 45%),
+                radial-gradient(circle at 90% 20%, rgba(14,165,233,.05) 0%, transparent 45%),
+                linear-gradient(to top, rgba(0,0,0,0.1), transparent);
+            position: relative;
+        }
+        .bg-orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.3;pointer-events:none;z-index:0;}
+        .orb1{width:400px;height:400px;background:radial-gradient(circle,rgba(56,189,248,.4),transparent);top:-100px;left:-100px;animation:float1 20s ease-in-out infinite;}
+        .orb2{width:300px;height:300px;background:radial-gradient(circle,rgba(14,165,233,.3),transparent);bottom:-50px;right:-50px;animation:float2 15s ease-in-out infinite;}
+        @keyframes float1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,50px) scale(1.1)}}
+        @keyframes float2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-30px,-40px) scale(1.15)}}
+        .container{max-width:480px;margin:0 auto;padding:60px 20px 40px;text-align:center;position:relative;z-index:1;}
+        .section.fade-in{animation:fadeIn 0.5s ease-out forwards;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .logo-container{width:90px;height:90px;border-radius:24px;display:flex;align-items:center;justify-content:center;background:rgba(56,189,248,.1);border:2px solid rgba(56,189,248,.3);box-shadow:0 10px 40px rgba(56,189,248,.4);transition:transform 0.3s ease;margin:0 auto 30px;}
+        .logo-container:hover{transform:scale(1.05);}
+        .logo{width:90px;height:90px;object-fit:cover;border-radius:24px;}
+        .headline{font-size:48px;font-weight:900;line-height:1.05;margin:20px 0 14px;background:linear-gradient(90deg,var(--text),var(--brand));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .text-neon{color:var(--brand);}
+        .subtitle{font-size:14px;color:var(--muted);line-height:1.5;margin:0 0 28px;}
+        .cta{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#05050A !important;font-weight:800;font-size:17px;border:0;border-radius:16px;padding:20px;margin-bottom:36px;text-decoration:none;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 10px 30px var(--brand-glow);transition:all 0.3s ease;animation:pulse 3s ease-in-out infinite;}
+        .cta::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left 0.5s;}
+        .cta:hover{transform:translateY(-2px);box-shadow:0 15px 40px rgba(56,189,248,.5);}
+        .cta:hover::before{left:100%;}
+        .cta:active{transform:scale(0.97);}
+        .cta-icon{width:22px;height:22px;flex-shrink:0;}
+        @keyframes pulse{0%,100%{box-shadow:0 10px 30px var(--brand-glow)}50%{box-shadow:0 15px 40px rgba(56,189,248,.6)}}
+        .card{background:var(--bg-card);border:1px solid var(--border);border-radius:24px;text-align:left;box-shadow:0 12px 40px rgba(0,0,0,.8),0 0 30px var(--brand-glow);padding:0;}
+        .section-title{font-size:12px;font-weight:700;text-align:center;margin:0;padding:20px 0;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+        .li{display:flex;gap:14px;padding:16px 24px;border-bottom:1px solid var(--border);align-items:center;}
+        .li:first-of-type{border-top:1px solid var(--border);}
+        .li:last-child{border-bottom:0;}
+        .check{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--brand);font-size:13px;font-weight:700;color:#05050A;flex-shrink:0;box-shadow:0 0 10px var(--brand-glow);}
+        .li b{display:block;color:var(--text);font-size:15px;font-weight:700;}
+        .muted-text{color:var(--muted);font-size:12px;margin-top:2px;}
+        .activation-notice{background:linear-gradient(135deg,#050e1a 0%,#0a0f19 100%);border:2px solid var(--accent-red);border-radius:16px;padding:16px 20px;margin-top:20px;text-align:left;position:relative;animation:glow-border 2s ease-in-out infinite;}
+        .activation-notice::before{content:'⚠️ IMPORTANT';position:absolute;top:-1px;right:20px;background:var(--accent-red);color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:0 0 8px 8px;letter-spacing:.5px;}
+        @keyframes glow-border{0%,100%{box-shadow:0 0 20px rgba(255,71,87,.3);border-color:var(--accent-red)}50%{box-shadow:0 0 35px rgba(255,71,87,.5);border-color:#ff6b7a}}
+        .activation-text{font-size:13px;color:var(--muted);line-height:1.5;margin:0;}
+        .highlight-blue{color:var(--brand);font-weight:700;}
+        .foot{color:var(--muted);font-size:11px;text-align:center;margin-top:14px;opacity:.6;}
+        @media(max-width:600px){.container{padding:50px 16px 28px;}.headline{font-size:38px;}.li{padding:14px 16px;}}
+    </style>
+</head>
+<body>
+    <div class="bg-orb orb1"></div>
+    <div class="bg-orb orb2"></div>
+    <div class="container">
+        <section class="section fade-in">
+            <div class="logo-container">
+                <img class="logo" src="https://play-lh.googleusercontent.com/8W0X_YPilF1Rn82UqNdrH1hIwSiqdQGNlrEp3pwAstF-fdgLMv1_5TXcilBQThZ35w" alt="Swagbucks Logo" />
+            </div>
+
+            <div class="headline">Get Paid to<br><span class="text-neon">Use Apps</span></div>
+            <p class="subtitle">Surveys, videos &amp; shopping — redeemable for gift cards or PayPal cash.</p>
+
+            <a id="cta" class="cta trxbutton" href="https://go.unlockbonusapp.com/click">
+                <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download Now — It's Free
+            </a>
+
+            <div class="card">
+                <div class="section-title">How It Works</div>
+                <div class="li">
+                    <span class="check">1</span>
+                    <div>
+                        <b>Download the Swagbucks App</b>
+                        <div class="muted-text">Available on iOS &amp; Android — Takes less than 60 seconds</div>
+                    </div>
+                </div>
+                <div class="li">
+                    <span class="check">2</span>
+                    <div>
+                        <b>Complete Daily Offers</b>
+                        <div class="muted-text">Watch videos, scroll videos, test apps &amp; games, or take surveys!</div>
+                    </div>
+                </div>
+                <div class="li">
+                    <span class="check">3</span>
+                    <div>
+                        <b>Cash Out Your Earnings</b>
+                        <div class="muted-text">Instant Payouts: PayPal, CashApp, Venmo, Crypto &amp; Wire</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activation-notice">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                    <span style="font-size:20px;">🔓</span>
+                    <span style="font-size:15px;font-weight:700;color:var(--text);">Activation Required</span>
+                </div>
+                <p class="activation-text">New users: Complete <span class="highlight-blue">2 quick offers</span> to unlock full access and start earning.</p>
+            </div>
+
+            <div class="foot">Free to download &bull; Cash out from $3 &bull; PayPal, Amazon &amp; more</div>
+        </section>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var searchParams = window.location.search;
+        if (searchParams) {
+            document.querySelectorAll('.trxbutton').forEach(function(btn) {
+                var href = btn.getAttribute('href');
+                if (href && href !== '#') {
+                    var separator = href.indexOf('?') !== -1 ? '&' : '?';
+                    var params = searchParams.startsWith('?') ? searchParams.substring(1) : searchParams;
+                    btn.setAttribute('href', href + separator + params);
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>
